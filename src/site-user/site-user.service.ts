@@ -1,26 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { CreateSiteUserDto } from './dto/create-site-user.dto';
-import { UpdateSiteUserDto } from './dto/update-site-user.dto';
 
 @Injectable()
 export class SiteUserService {
-  create(createSiteUserDto: CreateSiteUserDto) {
+  async create() {
+    
     return 'This action adds a new siteUser';
   }
 
-  findAll() {
+  async findAll() {
     return `This action returns all siteUser`;
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
     return `This action returns a #${id} siteUser`;
   }
 
-  update(id: number, updateSiteUserDto: UpdateSiteUserDto) {
+  async update(id: number) {
     return `This action updates a #${id} siteUser`;
   }
 
-  remove(id: number) {
+  async remove(id: number) {
     return `This action removes a #${id} siteUser`;
   }
 }

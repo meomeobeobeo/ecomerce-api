@@ -1,15 +1,14 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { DevideService } from './devide.service';
-import { CreateDevideDto } from './dto/create-devide.dto';
-import { UpdateDevideDto } from './dto/update-devide.dto';
+
 
 @Controller('devide')
 export class DevideController {
   constructor(private readonly devideService: DevideService) {}
 
   @Post()
-  create(@Body() createDevideDto: CreateDevideDto) {
-    return this.devideService.create(createDevideDto);
+  create() {
+    
   }
 
   @Get()
@@ -23,8 +22,8 @@ export class DevideController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDevideDto: UpdateDevideDto) {
-    return this.devideService.update(+id, updateDevideDto);
+  update(@Param('id') id: string) {
+   
   }
 
   @Delete(':id')

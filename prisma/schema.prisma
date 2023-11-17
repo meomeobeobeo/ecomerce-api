@@ -1,0 +1,100 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Test {
+  id        String      @id 
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model site_user {
+  id        String      @id
+  email     String  @unique
+  phone_number  String @unique 
+  status String ? 
+  avatar  String ? 
+  birth_day DateTime ?
+  userName String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  //relation one to many
+  devides devide[]
+  sessions session[]
+  auth auth?
+  otps otp[]
+
+  @@map("site_user")
+}
+model devide {
+  id String @id
+  user_id String 
+  os String?
+  osVersion String?
+  browser String?
+  browserVersion String?
+  status String @default("active") // active , inactive , lock
+  devide_id String
+  ip String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // relation one to many 
+  user site_user @relation(fields: [user_id],references: [id])
+
+
+  @@map("devide")
+
+}
+model auth {
+  id String @id
+  user_id String @unique
+  phone_number String
+  password String
+  askChangePwd Boolean @default(false)
+  isDeleted Boolean @default(false)
+  status String @default("active")
+  userName String
+  email String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user site_user @relation(fields: [user_id],references: [id])
+}
+
+model session {
+  id String @id
+  user_id String 
+  token String
+  devide_id String
+  expired_at DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user site_user @relation(fields: [user_id],references: [id])
+
+}
+
+model otp {
+  id String @id
+  value Int
+  user_id String
+  expired_at String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt 
+  tryCount Int @default(0)
+  typeOtp String // login/register/...otherService 
+
+
+  user site_user @relation(fields: [user_id],references: [id])
+}
+
