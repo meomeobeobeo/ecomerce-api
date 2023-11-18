@@ -36,7 +36,7 @@ export class AuthService {
         */
         try {
             let otpObject: any = await this.cacheService.get(
-                `otp:${email}`
+                `otp:email:${email}`
             )
 
             let otpHash = otpObject?.value
@@ -116,7 +116,7 @@ export class AuthService {
             // send code to email
 
             let value = await this.cacheService.set(
-                `otp:${otpResult.otpObject.email}`,
+                `otp:email:${otpResult.otpObject.email}`,
                 otpResult.otpObject,
                 { ttl: 190 }
             )
