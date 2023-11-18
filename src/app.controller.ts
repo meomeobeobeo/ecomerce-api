@@ -11,7 +11,7 @@ export class AppController {
   getHello(@Req() req: Request, @Res() res: Response): any {
     res.json({
       message: 'Hello',
-      errorCode: 423,
+      statusCode: 423,
     });
   }
 }

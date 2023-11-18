@@ -51,7 +51,7 @@ export class TestController {
         } catch (error) {
             console.error(error)
             res.json({
-                errorCode: 500,
+                statusCode: 500,
                 message: error,
             })
         }
@@ -67,13 +67,13 @@ export class TestController {
             let value = body?.value
             await this.cacheManager.set('testCache', value)
             res.json({
-                errorCode: 200,
+                statusCode: 200,
                 message: 'cache successfully',
                 metaData: '',
             })
         } catch (error) {
             res.json({
-                errorCode: 500,
+                statusCode: 500,
                 message: error,
                 metaData: '',
             })
@@ -88,7 +88,7 @@ export class TestController {
         try {
             let cacheValue = await this.cacheManager.get('testCache')
             res.json({
-                errorCode: 200,
+                statusCode: 200,
                 message: 'successfull',
                 metaData: {
                     cacheValue: cacheValue,
@@ -96,7 +96,7 @@ export class TestController {
             })
         } catch (error) {
             res.json({
-                errorCode: 500,
+                statusCode: 500,
                 message: error,
                 metaData: '',
             })

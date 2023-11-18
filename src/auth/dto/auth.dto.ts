@@ -49,3 +49,13 @@ export class LoginInforForm {
     @IsNotEmpty()
     password : string
 }
+export class OtpInfor extends RegisterInforForm {
+
+    @IsNotEmpty()
+    otpCode : string
+}
+export class EmailInfor {
+    @IsNotEmpty()
+    @IsEmail()
+    email : string 
+}

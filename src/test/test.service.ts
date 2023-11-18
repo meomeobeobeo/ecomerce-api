@@ -21,13 +21,13 @@ export class TestService {
       // this.helper.sendEmail('meotrangbeonknd@gmail.com' , 'HELLO THIS IS MAIL FROM MEOECO' , `<h3>${title} : </h3><span>${test_otp}</span>`)
 
       return {
-        errorCode: 200,
+        statusCode: 200,
         message: "successfull",
         metaData: data
     }
     } catch (error) {
       return {
-        errorCode: 500,
+        statusCode: 500,
         message: error,
         metaData: ''
     }
@@ -51,13 +51,13 @@ export class TestService {
         },
       });
       return {
-        errorCode: 200,
+        statusCode: 200,
         message: 'create test document successfull .',
         metaData: '',
       };
     } catch (error) {
       return {
-        errorCode: 500,
+        statusCode: 500,
         message: error,
         metaData: '',
       };
