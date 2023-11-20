@@ -13,16 +13,16 @@ import { OtpModule } from './otp/otp.module'
 import { RedisManagerModule } from './redis-manager/redis-manager.module'
 import { ConfigModule } from '@nestjs/config'
 import { CacheModule } from '@nestjs/cache-manager'
-import * as redisStore from 'cache-manager-redis-store';
+import * as redisStore from 'cache-manager-redis-store'
 @Module({
     imports: [
-      CacheModule.register({
-        isGlobal: true,
-        store: redisStore,
-        host: process.env.REDIS_HOST,
-        port: process.env.REDIS_PORT,
-        ttl : 60
-      }),
+        CacheModule.register({
+            isGlobal: true,
+            store: redisStore,
+            host: process.env.REDIS_HOST,
+            port: process.env.REDIS_PORT,
+            ttl: 60,
+        }),
         SiteUserModule,
         AuthModule,
         UserAddressModule,

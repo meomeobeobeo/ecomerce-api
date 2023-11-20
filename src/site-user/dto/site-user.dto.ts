@@ -1,27 +1,24 @@
-import { Expose } from "class-transformer";
-import { IsNotEmpty } from "class-validator";
+import { Expose } from 'class-transformer'
+import { IsNotEmpty } from 'class-validator'
 
 export class SiteUserDto {
-    
     @Expose()
     @IsNotEmpty()
-    email_address : string;
+    email_address: string
 
     @Expose()
     @IsNotEmpty()
-    phone_number : string;
+    phone_number: string
 
     @Expose()
-    status : 'active' | 'lock' | 'inactive'; // is active , lock , inactive
+    status: 'active' | 'lock' | 'inactive' // is active , lock , inactive
 
     @Expose()
-    avatar : string;
-
-
-    @Expose()
-    birth_day:string;
-
+    avatar: string
 
     @Expose()
-    userName:string;
+    birth_day: string
+
+    @Expose()
+    userName: string
 }

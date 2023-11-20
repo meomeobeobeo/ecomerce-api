@@ -1,61 +1,85 @@
-import { Expose } from "class-transformer"
-import { IsEmail, IsNotEmpty } from "class-validator"
+import { Expose } from 'class-transformer'
+import { IsEmail, IsNotEmpty } from 'class-validator'
 
-export class AuthDto{
+export class AuthDto {
+    @Expose()
+    @IsNotEmpty()
+    userId: string
 
     @Expose()
     @IsNotEmpty()
-    userId : string
-
-    @Expose()
-    @IsNotEmpty()
-    phoneNumber : string
+    phoneNumber: string
 
     @IsNotEmpty()
-    password : string
+    password: string
 
     @IsNotEmpty()
-    askChangePwd : boolean
+    askChangePwd: boolean
 
     @IsNotEmpty()
-    isDeleted : boolean
+    isDeleted: boolean
 
-    
-    status : 'active' | 'inactive' | 'lock'
-    
+    status: 'active' | 'inactive' | 'lock'
+
     @IsNotEmpty()
-    userName : string
-
+    userName: string
 }
 
 export class RegisterInforForm {
     @IsNotEmpty()
-    userName : string
+    userName: string
 
     @IsNotEmpty()
     @IsEmail()
-    email : string
+    email: string
 
     @IsNotEmpty()
-    password : string
-    @IsNotEmpty()
-    phone_number : string
+    password: string
+
+    phone_number: string
 }
 export class LoginInforForm {
     @IsNotEmpty()
     @IsEmail()
-    email : string
+    email: string
 
     @IsNotEmpty()
-    password : string
+    password: string
+
+    os: string
+    osVersion: string
+    browser: string
+    browserVersion: string
+
+    @IsNotEmpty()
+    devide_id: string
+
+    @IsNotEmpty()
+    ip: string
+
+    // @IsNotEmpty()
+    // otpCode: string
+
+    // @IsNotEmpty()
+    // typeOtp : string
 }
-export class OtpInfor extends RegisterInforForm {
+
+export class OtpRegisterInfor extends RegisterInforForm {
+    @IsNotEmpty()
+    otpCode: string
 
     @IsNotEmpty()
-    otpCode : string
+    typeOtp: string
+}
+export class OtpLoginDevideInfor extends LoginInforForm {
+    @IsNotEmpty()
+    otpCode: string
+
+    @IsNotEmpty()
+    typeOtp: string
 }
 export class EmailInfor {
     @IsNotEmpty()
     @IsEmail()
-    email : string 
+    email: string
 }

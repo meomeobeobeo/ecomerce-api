@@ -1,17 +1,17 @@
 // src/app.controller.ts
-import { Controller, Get, Req, Res } from '@nestjs/common';
-import { Request, Response } from 'express'; // Import Request and Response types
-import path from 'path';
+import { Controller, Get, Req, Res } from '@nestjs/common'
+import { Request, Response } from 'express' // Import Request and Response types
+import path from 'path'
 
 @Controller()
 export class AppController {
-  constructor() {}
+    constructor() {}
 
-  @Get()
-  getHello(@Req() req: Request, @Res() res: Response): any {
-    res.json({
-      message: 'Hello',
-      statusCode: 423,
-    });
-  }
+    @Get()
+    getHello(@Req() req: Request, @Res() res: Response): any {
+        res.json({
+            message: 'Hello',
+            statusCode: 423,
+        })
+    }
 }

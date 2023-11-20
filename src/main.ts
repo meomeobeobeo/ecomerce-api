@@ -1,12 +1,12 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core'
+import { AppModule } from './app.module'
+import { ValidationPipe } from '@nestjs/common'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  
-  await app.listen(3002);
+    const app = await NestFactory.create(AppModule)
 
-  console.log("app listen at http://localhost:3002")
+    await app.listen(3002)
+
+    console.log('app listen at http://localhost:3002')
 }
-bootstrap();
+bootstrap()

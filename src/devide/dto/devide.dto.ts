@@ -1,18 +1,16 @@
-import { IsNotEmpty } from "class-validator"
+import { IsNotEmpty } from 'class-validator'
 
-export class Devide{
-
+export class Devide {
     @IsNotEmpty()
-    user_id : string
-    os : string
-    osVersion : string
+    user_id: string
+    os: string
+    osVersion: string
     browser: string
-    browserVersion : string
+    browserVersion: string
     status: 'active' | 'inactive' | 'lock'
-    
 
-    devide_id : string
+    devide_id: string
 
     @IsNotEmpty()
-    ip : string
+    ip: string
 }

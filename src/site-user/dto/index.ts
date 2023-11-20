@@ -1,3 +1,3 @@
-import { SiteUserDto } from './site-user.dto';
+import { SiteUserDto } from './site-user.dto'
 
-export {SiteUserDto}
+export { SiteUserDto }

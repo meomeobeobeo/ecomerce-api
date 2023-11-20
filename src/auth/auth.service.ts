@@ -7,22 +7,61 @@ import { HelperService } from 'src/helper/helper.service'
 import { OtpService, ResultOtp } from 'src/otp/otp.service'
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import { Cache } from 'cache-manager'
+import constant from 'src/constant'
+
+interface VerifyOtpField {
+    verifyInformation: string // as information of email , value of phone number
+    typeOtp: string
+    otpCode: string
+}
 @Injectable()
 export class AuthService {
     constructor(
         @Inject(CACHE_MANAGER) private cacheService: Cache,
         private prismaService: PrismaService,
         private helper: HelperService,
-        private otpService: OtpService
+        private otpService: OtpService,
     ) {}
 
-    async createVerifyOtpEmail() {}
-    async createVerifyPhoneNumber() {}
-    async verifyOtp(
-        email: string,
-        otpCode: string,
-        userData: RegisterInforForm
-    ) {
+    async createUserInfomation(userData: RegisterInforForm) {
+        try {
+            const salt = await bcrypt.genSalt(10)
+            const hashPassword = await bcrypt.hash(userData.password, salt)
+            const newUser = await this.prismaService.site_user.create({
+                data: {
+                    id: this.helper.generateId(16),
+                    email: userData.email,
+                    userName: userData.userName,
+                    phone_number: userData.phone_number,
+                },
+            })
+
+            const user_auth = await this.prismaService.auth.create({
+                data: {
+                    id: this.helper.generateId(16),
+                    user_id: newUser.id,
+                    phone_number: userData.phone_number,
+                    password: hashPassword,
+                    userName: newUser.userName,
+                    email: newUser.email,
+                },
+            })
+
+            return {
+                statusCode: 202,
+                message: 'Register successfully. You can login in new devide.',
+                metaData: '',
+            }
+        } catch (error) {
+            console.log(error)
+            return {
+                statusCode: 500,
+                message: error,
+                metaData: '',
+            }
+        }
+    }
+    async verifyOtp(verifyOtpField: VerifyOtpField) {
         /*
         @Param 
         type_otp : string
@@ -32,67 +71,33 @@ export class AuthService {
         @description
         verify otp 
         value_otp compare with hash value with key.
-        create document site_user , document auth , save in mysql
+        
         */
         try {
             let otpObject: any = await this.cacheService.get(
-                `otp:email:${email}`
+                `otp:${verifyOtpField.typeOtp}:${verifyOtpField.verifyInformation}`,
             )
-
+            console.log(
+                `otp:${verifyOtpField.typeOtp}:${verifyOtpField.verifyInformation}`,
+            )
             let otpHash = otpObject?.value
-            let verifyOtpCode = await bcrypt.compare(otpCode, otpHash)
-
+            let verifyOtpCode = await bcrypt.compare(
+                verifyOtpField.otpCode,
+                otpHash,
+            )
             if (verifyOtpCode) {
-                const salt = await bcrypt.genSalt(10)
-                const hashPassword = await bcrypt.hash(userData.password, salt)
-                const newUser = await this.prismaService.site_user.create({
-                    data: {
-                        id: this.helper.generateId(16),
-                        email: email,
-                        userName: userData.userName,
-                        phone_number: userData.phone_number,
-                    },
-                })
-
-                const user_auth = await this.prismaService.auth.create({
-                    data: {
-                        id: this.helper.generateId(16),
-                        user_id: newUser.id,
-                        phone_number: userData.phone_number,
-                        password: hashPassword,
-                        userName: newUser.userName,
-                        email: newUser.email,
-                    },
-                })
-
-                return {
-                    statusCode: 202,
-                    message:
-                        'Register successfully. You can login in new devide.',
-                    metaData: '',
-                }
+                return 1
             } else {
-                return {
-                    statusCode: 400,
-                    message: 'Verify otp failed.Please re-enter the code',
-                    metaData: '',
-                }
+                return 0
             }
         } catch (error) {
             console.log(error)
-            return {
-                statusCode: 500,
-                message: error,
-                metaData: '',
-            }
-            
+            return -1
         }
     }
 
-    async registerWithEmail(email : string) {
+    async registerWithEmail(email: string, typeOtp: string) {
         try {
-            
-
             let existedUser = await this.prismaService.site_user.findMany({
                 where: {
                     email: email,
@@ -110,22 +115,25 @@ export class AuthService {
             let otpResult = await this.otpService.generateNewOtp(6, {
                 user_id: null,
                 email: email,
-                type_otp: 'VERIFY_EMAIL',
+                type_otp: constant.typeOtp.VERIFY_EMAIL,
+                phone_number: null,
             })
 
             // send code to email
 
             let value = await this.cacheService.set(
-                `otp:email:${otpResult.otpObject.email}`,
+                `otp:${typeOtp}:${otpResult.otpObject.email}`,
                 otpResult.otpObject,
-                { ttl: 190 }
+                { ttl: 190 },
             )
-           
+
             let email_title = 'Your verify otp for sign up is:'
 
-            let send_email = this.helper.sendEmail('meotrangbeonknd@gmail.com' , 'HELLO THIS IS MAIL FROM MEOECO' , `<h3>${email_title} : </h3><span>${otpResult.valueOtp}</span>`)
-
-           
+            let send_email = this.helper.sendEmail(
+                'meotrangbeonknd@gmail.com',
+                'HELLO THIS IS MAIL FROM MEOECO',
+                `<h3>${email_title} : </h3><span>${otpResult.valueOtp}</span>`,
+            )
 
             return {
                 statusCode: 200,
@@ -152,7 +160,7 @@ export class AuthService {
                 },
             })
 
-            if (existedUser) {
+            if (!existedUser) {
                 return {
                     statusCode: 404,
                     message: 'User not found with email.',
@@ -164,13 +172,57 @@ export class AuthService {
                     user_id: existedUser.id,
                 },
             })
-            if (auth_infor) {
+            if (!auth_infor) {
                 return {
                     statusCode: 409,
                     message:
                         'Conflict with account information. Please contact us..',
                     metaData: '',
                 }
+            }
+            let hashPassword = auth_infor.password
+            const verifyPassWord = bcrypt.compare(password, hashPassword)
+            if (!verifyPassWord) {
+                return {
+                    statusCode: 401,
+                    message: 'Password failed.',
+                    metaData: '',
+                }
+            }
+            // check devide information
+            let currentDevideInfor = await this.prismaService.devide.findMany({
+                where: {
+                    devide_id: loginInfor.devide_id,
+                },
+            })
+
+            if (currentDevideInfor.length > 0) {
+                // generate token , return information
+            }
+            //create otp , cache in redis , verify otp
+            const otpResult = await this.otpService.generateNewOtp(6, {
+                email: loginInfor.email,
+                phone_number: '',
+                type_otp: constant.typeOtp.VERIFY_DEVIDE,
+                user_id: existedUser.id,
+            })
+            // cache otp in redis
+            let value = await this.cacheService.set(
+                `otp:${constant.typeOtp.VERIFY_DEVIDE}:${otpResult.otpObject.email}`,
+                otpResult.otpObject,
+                { ttl: 190 },
+            )
+            const email_title = 'This is otp for verify your devide.'
+            let send_email = this.helper.sendEmail(
+                'meotrangbeonknd@gmail.com',
+                'HELLO THIS IS MAIL FROM MEOECO',
+                `<h3>${email_title} : </h3><span>${otpResult.valueOtp}</span>`,
+            )
+
+            return {
+                statusCode: 200,
+                message: 'Please enter otp to verify this devide.',
+                metaData: '',
             }
         } catch (error) {
             return {
@@ -179,7 +231,12 @@ export class AuthService {
                 metaData: '',
             }
         }
-
-        return 'login with password'
     }
+
+    async createDevideInfor() {}
+
+    async createUserLoginSession() {}
+
+    // action when log out
+    async deleteUserLoginSession() {}
 }

@@ -30,7 +30,7 @@ import { Cache } from 'cache-manager'
 export class TestController {
     constructor(
         private readonly testService: TestService,
-        @Inject(CACHE_MANAGER) private cacheManager: Cache
+        @Inject(CACHE_MANAGER) private cacheManager: Cache,
     ) {}
 
     @Post()
@@ -61,7 +61,7 @@ export class TestController {
     async setCacheData(
         @Req() req: Request,
         @Res() res: Response,
-        @Body() body: any
+        @Body() body: any,
     ): Promise<any> {
         try {
             let value = body?.value
@@ -83,7 +83,7 @@ export class TestController {
     async getCacheData(
         @Req() req: Request,
         @Res() res: Response,
-        @Param() params: any
+        @Param() params: any,
     ): Promise<any> {
         try {
             let cacheValue = await this.cacheManager.get('testCache')
