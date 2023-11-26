@@ -186,7 +186,7 @@ export class AuthService {
                 }
             }
             let hashPassword = auth_infor.password
-            const verifyPassWord = bcrypt.compare(password, hashPassword)
+            const verifyPassWord = await bcrypt.compare(password, hashPassword)
             if (!verifyPassWord) {
                 return {
                     statusCode: 401,
@@ -198,6 +198,7 @@ export class AuthService {
             let currentDevideInfor = await this.prismaService.devide.findMany({
                 where: {
                     devide_id: loginInfor.devide_id,
+                    user_id : existedUser.id
                 },
             })
 
@@ -268,7 +269,7 @@ export class AuthService {
             )
 
             return {
-                statusCode: 200,
+                statusCode: 202,
                 message: 'Please enter otp to verify this devide.',
                 metaData: {
                     otpCode: otpResult.valueOtp,

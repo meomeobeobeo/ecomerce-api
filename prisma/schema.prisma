@@ -19,7 +19,7 @@ model Test {
 model site_user {
   id        String      @id
   email     String  @unique
-  phone_number  String ? @unique 
+  phone_number  String ? 
   status String ? 
   avatar  String ? 
   birth_day DateTime ?

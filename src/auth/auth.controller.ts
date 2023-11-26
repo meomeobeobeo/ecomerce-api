@@ -129,12 +129,6 @@ export class AuthController {
 
             const data = await this.authService.createUserLoginSession(otpInfor.email , otpInfor.devide_id)
 
-
-
-           
-
-
-
             res.json({
                 statusCode: 200,
                 message: 'verify otp true.',
