@@ -27,7 +27,7 @@ export class TestService {
         } catch (error) {
             return {
                 statusCode: 500,
-                message: error,
+                message: error?.message,
                 metaData: '',
             }
         }
@@ -54,7 +54,7 @@ export class TestService {
         } catch (error) {
             return {
                 statusCode: 500,
-                message: error,
+                message: error?.message,
                 metaData: '',
             }
         }

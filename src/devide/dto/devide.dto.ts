@@ -8,9 +8,7 @@ export class Devide {
     browser: string
     browserVersion: string
     status: 'active' | 'inactive' | 'lock'
-
     devide_id: string
-
     @IsNotEmpty()
     ip: string
 }

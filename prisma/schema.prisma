@@ -19,7 +19,7 @@ model Test {
 model site_user {
   id        String      @id
   email     String  @unique
-  phone_number  String @unique 
+  phone_number  String ? @unique 
   status String ? 
   avatar  String ? 
   birth_day DateTime ?
@@ -47,7 +47,6 @@ model devide {
   ip String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
   // relation one to many 
   user site_user @relation(fields: [user_id],references: [id])
 

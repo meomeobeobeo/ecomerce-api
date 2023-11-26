@@ -8,11 +8,24 @@ import { OtpService, ResultOtp } from 'src/otp/otp.service'
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import { Cache } from 'cache-manager'
 import constant from 'src/constant'
+import { Devide } from 'src/devide/dto/devide.dto'
+import { JwtService } from '@nestjs/jwt'
+import { ConfigService } from '@nestjs/config'
 
 interface VerifyOtpField {
     verifyInformation: string // as information of email , value of phone number
     typeOtp: string
     otpCode: string
+}
+interface DevideInforForm {
+    os: string
+    osVersion: string
+    browser: string
+    browserVersion: string
+    devide_id: string
+    ip: string
+    status: 'active'
+    email: string
 }
 @Injectable()
 export class AuthService {
@@ -21,6 +34,8 @@ export class AuthService {
         private prismaService: PrismaService,
         private helper: HelperService,
         private otpService: OtpService,
+        private jwtService: JwtService,
+        private configService: ConfigService,
     ) {}
 
     async createUserInfomation(userData: RegisterInforForm) {
@@ -56,23 +71,13 @@ export class AuthService {
             console.log(error)
             return {
                 statusCode: 500,
-                message: error,
+                message: error?.message,
                 metaData: '',
             }
         }
     }
+
     async verifyOtp(verifyOtpField: VerifyOtpField) {
-        /*
-        @Param 
-        type_otp : string
-        key : string
-        value_verify : string
-        user_id : string
-        @description
-        verify otp 
-        value_otp compare with hash value with key.
-        
-        */
         try {
             let otpObject: any = await this.cacheService.get(
                 `otp:${verifyOtpField.typeOtp}:${verifyOtpField.verifyInformation}`,
@@ -146,7 +151,7 @@ export class AuthService {
             console.log(error)
             return {
                 statusCode: 500,
-                message: error,
+                message: error?.message,
                 metaData: '',
             }
         }
@@ -197,8 +202,51 @@ export class AuthService {
             })
 
             if (currentDevideInfor.length > 0) {
-                // generate token , return information
+                let devideInfor = currentDevideInfor[0]
+                let statusInfor = devideInfor.status
+                if (statusInfor === 'lock') {
+                    return {
+                        statusCode: 400,
+                        message: 'This devide is locked.Please contact admin.',
+                        metaData: {},
+                    }
+                } else if (statusInfor === 'inactive') {
+                    return {
+                        statusCode: 400,
+                        message:
+                            'This devide is inactive.Please contact admin.',
+                        metaData: {},
+                    }
+                } else {
+                    // generate token , return information
+                    const token = await this.createTokenJwt(
+                        existedUser.id,
+                        email,
+                        devideInfor.devide_id,
+                    )
+
+                    //can cache token in redis here
+
+
+                    return {
+                        statusCode: 200,
+                        message: 'Login success.',
+                        metaData: {
+                            userInfor: {
+                                id: existedUser.id,
+                                birth_day: existedUser.birth_day,
+                                userName: existedUser.userName,
+                                avatar: existedUser.avatar,
+                                phone_number: existedUser.phone_number,
+                                email: existedUser.email,
+                            },
+                            token: token,
+                        },
+                    }
+                }
             }
+
+            // if not have log in in this devide , verify current login devide by otp code
             //create otp , cache in redis , verify otp
             const otpResult = await this.otpService.generateNewOtp(6, {
                 email: loginInfor.email,
@@ -214,7 +262,7 @@ export class AuthService {
             )
             const email_title = 'This is otp for verify your devide.'
             let send_email = this.helper.sendEmail(
-                'meotrangbeonknd@gmail.com',
+                'meotrangbeonknd@gmail.com', // email account
                 'HELLO THIS IS MAIL FROM MEOECO',
                 `<h3>${email_title} : </h3><span>${otpResult.valueOtp}</span>`,
             )
@@ -222,20 +270,98 @@ export class AuthService {
             return {
                 statusCode: 200,
                 message: 'Please enter otp to verify this devide.',
-                metaData: '',
+                metaData: {
+                    otpCode: otpResult.valueOtp,
+                },
             }
         } catch (error) {
             return {
                 statusCode: 500,
-                message: error,
+                message: error?.message,
                 metaData: '',
             }
         }
     }
 
-    async createDevideInfor() {}
+    async createDevideInfor(devideInfor: DevideInforForm) {
+        try {
+            let userInformation = await this.prismaService.site_user.findUnique(
+                {
+                    where: { email: devideInfor.email },
+                },
+            )
 
-    async createUserLoginSession() {}
+            let createdDevide = await this.prismaService.devide.create({
+                data: {
+                    id: this.helper.generateId(6),
+                    devide_id: devideInfor.devide_id,
+                    browser: devideInfor.browser,
+                    browserVersion: devideInfor.browserVersion,
+                    ip: devideInfor.ip,
+                    os: devideInfor.os,
+                    osVersion: devideInfor.osVersion,
+                    status: devideInfor.status,
+                    user_id: userInformation.id,
+                },
+            })
+        } catch (error) {
+            console.log(error)
+            return {
+                statusCode: 500,
+                message: error?.message,
+                metaData: '',
+            }
+        }
+    }
+    async createTokenJwt(
+        userId: string,
+        email: string,
+        devide_id: string,
+    ): Promise<string> {
+        const payload = {
+            id: userId,
+            email: email,
+            devide_id: devide_id,
+        }
+
+        return this.jwtService.signAsync(payload, {
+            expiresIn: '10m',
+            secret: this.configService.get('JWT_SECRET'),
+        })
+    }
+
+    async createUserLoginSession(email: string, devide_id: string) {
+        try {
+            let userInformation = await this.prismaService.site_user.findUnique(
+                {
+                    where: { email: email },
+                },
+            )
+            const token = await this.createTokenJwt(
+                userInformation.id,
+                email,
+                devide_id,
+            )
+
+            return {
+                userInfor: {
+                    id: userInformation.id,
+                    birth_day: userInformation.birth_day,
+                    userName: userInformation.userName,
+                    avatar: userInformation.avatar,
+                    phone_number: userInformation.phone_number,
+                    email: userInformation.email,
+                },
+                token: token,
+            }
+        } catch (error) {
+            return {
+                statusCode: 500,
+                message: error?.message,
+                metaData: '',
+            }
+        }
+    }
 
     // action when log out
     async deleteUserLoginSession() {}

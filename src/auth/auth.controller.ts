@@ -111,10 +111,34 @@ export class AuthController {
                 metaData: '',
             })
         } else {
+
+            // create devide information
+            // create session user login in current devide include token , refresh 
+            
+            
+            this.authService.createDevideInfor({
+                os : otpInfor.os,
+                osVersion:otpInfor.osVersion,
+                browser : otpInfor.browser,
+                browserVersion : otpInfor.browserVersion,
+                devide_id : otpInfor.devide_id,
+                ip : otpInfor.ip,
+                status : 'active',
+                email : otpInfor.email
+            })
+
+            const data = await this.authService.createUserLoginSession(otpInfor.email , otpInfor.devide_id)
+
+
+
+           
+
+
+
             res.json({
                 statusCode: 200,
                 message: 'verify otp true.',
-                metaData: '',
+                metaData: data,
             })
         }
     }

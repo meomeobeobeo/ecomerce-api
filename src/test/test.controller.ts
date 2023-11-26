@@ -13,6 +13,7 @@ import {
     Inject,
     UsePipes,
     ValidationPipe,
+    UseGuards,
 } from '@nestjs/common'
 import { TestService } from './test.service'
 import { CreateTestDto } from './dto/create-test.dto'
@@ -25,6 +26,7 @@ import {
     CacheTTL,
 } from '@nestjs/cache-manager'
 import { Cache } from 'cache-manager'
+import { AuthGuard } from '@nestjs/passport'
 
 @Controller('test')
 export class TestController {
@@ -41,7 +43,8 @@ export class TestController {
 
     @Get()
     @HttpCode(200)
-    @CacheTTL(12)
+    @UseGuards(AuthGuard('jwt'))
+    @CacheTTL(20)
     @CacheKey('test')
     async findAll(@Req() req: Request, @Res() res: Response) {
         try {
@@ -52,7 +55,7 @@ export class TestController {
             console.error(error)
             res.json({
                 statusCode: 500,
-                message: error,
+                message: error?.message,
             })
         }
     }
@@ -74,7 +77,7 @@ export class TestController {
         } catch (error) {
             res.json({
                 statusCode: 500,
-                message: error,
+                message: error?.message,
                 metaData: '',
             })
         }
@@ -97,7 +100,7 @@ export class TestController {
         } catch (error) {
             res.json({
                 statusCode: 500,
-                message: error,
+                message: error?.message,
                 metaData: '',
             })
         }

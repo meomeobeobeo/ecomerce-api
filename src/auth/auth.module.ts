@@ -5,17 +5,13 @@ import { AuthController } from './auth.controller'
 import { OtpService } from 'src/otp/otp.service'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import * as redisStore from 'cache-manager-redis-store'
+import { JwtModule } from '@nestjs/jwt'
+import { JwtStrategy } from './strategy'
 @Module({
     imports: [
-        CacheModule.register({
-            isGlobal: true,
-            store: redisStore,
-            host: process.env.REDIS_HOST,
-            port: process.env.REDIS_PORT,
-            ttl: 120,
-        }),
+        JwtModule
     ],
     controllers: [AuthController],
-    providers: [AuthService, OtpService],
+    providers: [AuthService, OtpService , JwtStrategy],
 })
 export class AuthModule {}
