@@ -279,7 +279,7 @@ export class AuthService {
             return {
                 statusCode: 500,
                 message: error?.message,
-                metaData: '',
+                metaData: '',   
             }
         }
     }
@@ -290,7 +290,7 @@ export class AuthService {
                 {
                     where: { email: devideInfor.email },
                 },
-            )
+            )                                               
 
             let createdDevide = await this.prismaService.devide.create({
                 data: {

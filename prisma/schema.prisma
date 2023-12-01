@@ -11,89 +11,189 @@ datasource db {
 }
 
 model Test {
-  id        String      @id 
+  id        String   @id
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
 model site_user {
-  id        String      @id
-  email     String  @unique
-  phone_number  String ? 
-  status String ? 
-  avatar  String ? 
-  birth_day DateTime ?
-  userName String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String    @id
+  email        String    @unique
+  phone_number String?
+  status       String?
+  avatar       String?
+  birth_day    DateTime?
+  userName     String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   //relation one to many
-  devides devide[]
+  devides  devide[]
   sessions session[]
-  auth auth?
-  otps otp[]
+  auth     auth?
+  otps     otp[]
 
   @@map("site_user")
 }
-model devide {
-  id String @id
-  user_id String 
-  os String?
-  osVersion String?
-  browser String?
-  browserVersion String?
-  status String @default("active") // active , inactive , lock
-  devide_id String
-  ip String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  // relation one to many 
-  user site_user @relation(fields: [user_id],references: [id])
 
+model devide {
+  id             String    @id
+  user_id        String
+  os             String?
+  osVersion      String?
+  browser        String?
+  browserVersion String?
+  status         String    @default("active") // active , inactive , lock
+  devide_id      String
+  ip             String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  // relation one to many 
+  user           site_user @relation(fields: [user_id], references: [id])
 
   @@map("devide")
-
 }
-model auth {
-  id String @id
-  user_id String @unique
-  phone_number String
-  password String
-  askChangePwd Boolean @default(false)
-  isDeleted Boolean @default(false)
-  status String @default("active")
-  userName String
-  email String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  user site_user @relation(fields: [user_id],references: [id])
+model auth {
+  id           String   @id
+  user_id      String   @unique
+  phone_number String
+  password     String
+  askChangePwd Boolean  @default(false)
+  isDeleted    Boolean  @default(false)
+  status       String   @default("active")
+  userName     String
+  email        String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user site_user @relation(fields: [user_id], references: [id])
 }
 
 model session {
-  id String @id
-  user_id String 
-  token String
-  devide_id String
+  id         String   @id
+  user_id    String
+  token      String
+  devide_id  String
   expired_at DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  user site_user @relation(fields: [user_id],references: [id])
-
+  user site_user @relation(fields: [user_id], references: [id])
 }
 
 model otp {
-  id String @id
-  value Int
-  user_id String
+  id         String   @id
+  value      Int
+  user_id    String
   expired_at String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt 
-  tryCount Int @default(0)
-  typeOtp String // login/register/...otherService 
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  tryCount   Int      @default(0)
+  typeOtp    String // login/register/...otherService 
 
-
-  user site_user @relation(fields: [user_id],references: [id])
+  user site_user @relation(fields: [user_id], references: [id])
 }
 
+model country {
+  id           String @id
+  country_name String
+}
+
+model payment_type {
+  id    String @id
+  value String
+}
+
+model product {
+  id            String @id
+  category_id   String
+  name          String
+  description   String
+  product_image String
+
+  category     product_category @relation("product in product category", fields: [category_id], references: [id])
+  product_item product_item[]   @relation("product item in product")
+}
+
+// Define the product_category model
+model product_category {
+  id                 String  @id
+  parent_category_id String? // Optional field for the parent category
+
+  // Other fields in your model
+  category_name String
+
+  // Define the one-to-many relationship
+  parentcategories product_category[] @relation("ParentCategory")
+  parent_category  product_category?  @relation("ParentCategory", fields: [parent_category_id], references: [id])
+
+  products product[] @relation("product in product category")
+}
+
+model promotion_category {
+  id           String @id
+  category_id  String
+  promotion_id String
+
+  promotion promotion @relation(fields: [promotion_id], references: [id])
+}
+
+model promotion {
+  id            String   @id
+  name          String
+  description   String
+  discount_rate String
+  start_date    DateTime
+  end_date      DateTime
+
+  promotion_categorys promotion_category[]
+}
+
+model product_item {
+  id            String @id
+  product_id    String
+  SKU           String
+  qty_in_stock  String
+  product_image String
+
+  //many to one
+  product product @relation("product item in product", fields: [product_id], references: [id])
+
+  //one to many
+  product_configuration product_configuration[] @relation("product item in product configuration")
+}
+
+model variation {
+  id          String @id
+  category_id String
+  name        String
+
+
+  //one to many
+  variation_options variation_option[] @relation("variation in variation option")
+}
+
+model variation_option {
+  id           String @id
+  variation_id String
+  value        String
+
+  // many to one 
+  product_configuration product_configuration[] @relation("variation option in product configuration")
+
+  //one to many
+  variation variation @relation("variation in variation option",fields: [variation_id],references: [id])
+}
+
+model product_configuration {
+  product_item_id     String
+  variation_option_id String
+
+  //many to one
+  product_item     product_item     @relation("product item in product configuration", fields: [product_item_id], references: [id])
+  variation_option variation_option @relation("variation option in product configuration", fields: [variation_option_id], references: [id])
+
+  @@id([product_item_id, variation_option_id])
+}
