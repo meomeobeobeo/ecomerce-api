@@ -53,15 +53,75 @@ export class CountryService {
         }
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} country`
+    async findOne(id: string) {
+        try {
+            let dataReturn = await this.prismaService.country.findUnique({
+                where : {
+                    id : id
+                }
+            })
+
+            return  {
+              statusCode: 200,
+              message: 'data load successfully',
+              metaData: dataReturn,
+          }
+        } catch (error) {
+            console.log(error)
+            return {
+                statusCode: 500,
+                message: error?.message,
+                metaData: '',
+            }
+        }
+       
     }
 
-    update(id: number, updateCountryDto: UpdateCountryDto) {
-        return `This action updates a #${id} country`
+    async update(id: string, updateCountryDto: UpdateCountryDto) {
+        try {
+            console.log(updateCountryDto)
+            let dataReturn = await this.prismaService.country.update({
+                where :{
+                    id : id
+                },
+                data : updateCountryDto
+            })
+
+            return  {
+              statusCode: 204,
+              message: 'update data successfully',
+              metaData: dataReturn,
+          }
+        } catch (error) {
+            console.log(error)
+            return {
+                statusCode: 500,
+                message: error?.message,
+                metaData: '',
+            }
+        }
     }
 
-    remove(id: number) {
-        return `This action removes a #${id} country`
+    async remove(id: string) {
+        try {
+            let dataReturn = await this.prismaService.country.delete({
+                where : {
+                    id : id
+                }
+            })
+
+            return  {
+              statusCode: 205,
+              message: 'data delete successfully',
+              metaData: {},
+          }
+        } catch (error) {
+            console.log(error)
+            return {
+                statusCode: 500,
+                message: error?.message,
+                metaData: '',
+            }
+        }
     }
 }

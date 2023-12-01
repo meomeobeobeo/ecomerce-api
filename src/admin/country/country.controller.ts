@@ -22,16 +22,20 @@ export class CountryController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.countryService.findOne(+id);
+    return this.countryService.findOne(id);
   }
 
+
+
+  @UsePipes(new ValidationPipe())
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCountryDto: UpdateCountryDto) {
-    return this.countryService.update(+id, updateCountryDto);
+    console.log(updateCountryDto)
+    return this.countryService.update(id, updateCountryDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.countryService.remove(+id);
+    return this.countryService.remove(id);
   }
 }
