@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import * as moment from 'moment'
+import moment from 'moment'
 import * as nodemailer from 'nodemailer'
 @Injectable()
 export class HelperService {

@@ -22,6 +22,7 @@ import { ProductConfigurationModule } from './admin/product-configuration/produc
 import { ProductModule } from './admin/product/product.module';
 import { ProductCategoryModule } from './admin/product-category/product-category.module';
 import { PaymentTypeModule } from './admin/payment-type/payment-type.module';
+import { UploadImageModule } from './utils/upload-image/upload-image.module';
 import * as redisStore from 'cache-manager-redis-store'
 @Module({
     imports: [
@@ -51,6 +52,7 @@ import * as redisStore from 'cache-manager-redis-store'
         PromotionCategoryModule,
         VariationModule,
         VariationOptionModule,
+        UploadImageModule,
     ],
     controllers: [AppController],
     providers: [AppService, HelperService],
