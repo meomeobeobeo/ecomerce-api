@@ -9,17 +9,17 @@ import * as redisStore from 'cache-manager-redis-store'
 
 @Module({
     imports: [
-        CacheModule.registerAsync({
-            imports: [ConfigModule],
-            inject: [ConfigService],
-            useFactory: async (configService: ConfigService) => ({
-                //isGlobal: true,
-                store: redisStore,
-                host: configService.get('REDIS_HOST'),
-                port: configService.get('REDIS_PORT'),
-                ttl: 20,
-            }),
-        }),
+        // CacheModule.registerAsync({
+        //     imports: [ConfigModule],
+        //     inject: [ConfigService],
+        //     useFactory: async (configService: ConfigService) => ({
+        //         //isGlobal: true,
+        //         store: redisStore,
+        //         host: configService.get('REDIS_HOST'),
+        //         port: configService.get('REDIS_PORT'),
+        //         ttl: 20,
+        //     }),
+        // }),
     ],
     controllers: [TestController],
     providers: [TestService, PrismaService],
