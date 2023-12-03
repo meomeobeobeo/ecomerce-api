@@ -12,8 +12,8 @@ async function bootstrap() {
       });
       
       
-    await app.listen(3002)
+    await app.listen(80)
 
-    console.log('app listen at http://localhost:3002')
+    console.log('app listen at http://localhost:80')
 }
 bootstrap()
