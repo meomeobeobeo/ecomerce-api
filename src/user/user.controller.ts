@@ -1,14 +1,4 @@
-import {
-    Body,
-    Controller,
-    Get,
-    Inject,
-    Post,
-    Req,
-    Res,
-    UsePipes,
-    ValidationPipe,
-} from '@nestjs/common'
+import { Body, Controller, Get, Inject, Post, Req, Res, UsePipes, ValidationPipe } from '@nestjs/common'
 import { Request, Response } from 'express' // Import Request and Response from the 'express' library
 import { Users } from './user.dto'
 import { plainToClass } from 'class-transformer'
@@ -47,11 +37,7 @@ export class UserController {
 
     @UsePipes(new ValidationPipe())
     @Post()
-    createNewUser(
-        @Req() req: Request,
-        @Res() res: Response,
-        @Body() user: Users,
-    ): any {
+    createNewUser(@Req() req: Request, @Res() res: Response, @Body() user: Users): any {
         // Access the valueProvider property from the constructor
 
         const userService = this.moduleRef.get(UserService, { strict: false })

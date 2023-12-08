@@ -1,26 +1,124 @@
-import { Injectable } from '@nestjs/common';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
+import { Injectable } from '@nestjs/common'
+import { CreateProductDto } from './dto/create-product.dto'
+import { UpdateProductDto } from './dto/update-product.dto'
+import { PrismaService } from 'src/prisma/prisma.service'
+import { HelperService } from 'src/helper/helper.service'
 
 @Injectable()
 export class ProductService {
-  create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
-  }
+    constructor(
+        private prismaService: PrismaService,
+        private helper: HelperService,
+    ) {}
+    async create(createProductDto: CreateProductDto) {
+        try {
+            let dataCreated = await this.prismaService.product.create({
+                data: {
+                    id: this.helper.generateId(16),
+                    ...createProductDto,
+                },
+            })
 
-  findAll() {
-    return `This action returns all product`;
-  }
+            return {
+                statusCode: 201,
+                message: 'data create successfully',
+                metaData: '',
+            }
+        } catch (error) {
+            console.log(error)
+            return {
+                statusCode: 500,
+                message: error?.message,
+                metaData: '',
+            }
+        }
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
-  }
+    async findAll() {
+        try {
+            let dataReturn = await this.prismaService.product.findMany({})
+            return {
+                statusCode: 200,
+                message: 'data load successfully',
+                metaData: dataReturn,
+            }
+        } catch (error) {
+            console.log(error)
+            return {
+                statusCode: 500,
+                message: error?.message,
+                metaData: '',
+            }
+        }
+    }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
-  }
+    async findOne(id: string) {
+        try {
+            let dataReturn = await this.prismaService.product.findUnique({
+                where: {
+                    id: id,
+                },
+            })
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
-  }
+            return {
+                statusCode: 200,
+                message: 'data load successfully',
+                metaData: dataReturn,
+            }
+        } catch (error) {
+            console.log(error)
+            return {
+                statusCode: 500,
+                message: error?.message,
+                metaData: '',
+            }
+        }
+    }
+
+    async update(id: string, updateProductDto: UpdateProductDto) {
+        try {
+            let dataReturn = await this.prismaService.product.update({
+                where: {
+                    id: id,
+                },
+                data: updateProductDto,
+            })
+
+            return {
+                statusCode: 204,
+                message: 'update data successfully',
+                metaData: dataReturn,
+            }
+        } catch (error) {
+            console.log(error)
+            return {
+                statusCode: 500,
+                message: error?.message,
+                metaData: '',
+            }
+        }
+    }
+
+    async remove(id: string) {
+        try {
+            let dataReturn = await this.prismaService.product.delete({
+                where: {
+                    id: id,
+                },
+            })
+
+            return {
+                statusCode: 205,
+                message: 'data delete successfully',
+                metaData: {},
+            }
+        } catch (error) {
+            console.log(error)
+            return {
+                statusCode: 500,
+                message: error?.message,
+                metaData: '',
+            }
+        }
+    }
 }

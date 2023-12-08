@@ -82,14 +82,9 @@ export class AuthService {
             let otpObject: any = await this.cacheService.get(
                 `otp:${verifyOtpField.typeOtp}:${verifyOtpField.verifyInformation}`,
             )
-            console.log(
-                `otp:${verifyOtpField.typeOtp}:${verifyOtpField.verifyInformation}`,
-            )
+            console.log(`otp:${verifyOtpField.typeOtp}:${verifyOtpField.verifyInformation}`)
             let otpHash = otpObject?.value
-            let verifyOtpCode = await bcrypt.compare(
-                verifyOtpField.otpCode,
-                otpHash,
-            )
+            let verifyOtpCode = await bcrypt.compare(verifyOtpField.otpCode, otpHash)
             if (verifyOtpCode) {
                 return 1
             } else {
@@ -180,8 +175,7 @@ export class AuthService {
             if (!auth_infor) {
                 return {
                     statusCode: 409,
-                    message:
-                        'Conflict with account information. Please contact us..',
+                    message: 'Conflict with account information. Please contact us..',
                     metaData: '',
                 }
             }
@@ -198,7 +192,7 @@ export class AuthService {
             let currentDevideInfor = await this.prismaService.devide.findMany({
                 where: {
                     devide_id: loginInfor.devide_id,
-                    user_id : existedUser.id
+                    user_id: existedUser.id,
                 },
             })
 
@@ -214,20 +208,14 @@ export class AuthService {
                 } else if (statusInfor === 'inactive') {
                     return {
                         statusCode: 400,
-                        message:
-                            'This devide is inactive.Please contact admin.',
+                        message: 'This devide is inactive.Please contact admin.',
                         metaData: {},
                     }
                 } else {
                     // generate token , return information
-                    const token = await this.createTokenJwt(
-                        existedUser.id,
-                        email,
-                        devideInfor.devide_id,
-                    )
+                    const token = await this.createTokenJwt(existedUser.id, email, devideInfor.devide_id)
 
                     //can cache token in redis here
-
 
                     return {
                         statusCode: 200,
@@ -279,18 +267,16 @@ export class AuthService {
             return {
                 statusCode: 500,
                 message: error?.message,
-                metaData: '',   
+                metaData: '',
             }
         }
     }
 
     async createDevideInfor(devideInfor: DevideInforForm) {
         try {
-            let userInformation = await this.prismaService.site_user.findUnique(
-                {
-                    where: { email: devideInfor.email },
-                },
-            )                                               
+            let userInformation = await this.prismaService.site_user.findUnique({
+                where: { email: devideInfor.email },
+            })
 
             let createdDevide = await this.prismaService.devide.create({
                 data: {
@@ -314,11 +300,7 @@ export class AuthService {
             }
         }
     }
-    async createTokenJwt(
-        userId: string,
-        email: string,
-        devide_id: string,
-    ): Promise<string> {
+    async createTokenJwt(userId: string, email: string, devide_id: string): Promise<string> {
         const payload = {
             id: userId,
             email: email,
@@ -333,16 +315,10 @@ export class AuthService {
 
     async createUserLoginSession(email: string, devide_id: string) {
         try {
-            let userInformation = await this.prismaService.site_user.findUnique(
-                {
-                    where: { email: email },
-                },
-            )
-            const token = await this.createTokenJwt(
-                userInformation.id,
-                email,
-                devide_id,
-            )
+            let userInformation = await this.prismaService.site_user.findUnique({
+                where: { email: email },
+            })
+            const token = await this.createTokenJwt(userInformation.id, email, devide_id)
 
             return {
                 userInfor: {

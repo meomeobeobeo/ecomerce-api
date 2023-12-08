@@ -129,15 +129,19 @@ model product_category {
   parentcategories product_category[] @relation("ParentCategory")
   parent_category  product_category?  @relation("ParentCategory", fields: [parent_category_id], references: [id])
 
-  products product[] @relation("product in product category")
+  products             product[]            @relation("product in product category")
+  promotion_categories promotion_category[] @relation("product category id in table promotion_category")
 }
 
 model promotion_category {
-  id           String @id
   category_id  String
   promotion_id String
 
-  promotion promotion @relation(fields: [promotion_id], references: [id])
+  // Remove the product_category field
+  promotion       promotion        @relation("promotion id in table promotion", fields: [promotion_id], references: [id])
+  product_categoy product_category @relation("product category id in table promotion_category" , fields: [category_id] , references: [id])
+
+  @@id([category_id, promotion_id])
 }
 
 model promotion {
@@ -148,7 +152,7 @@ model promotion {
   start_date    DateTime
   end_date      DateTime
 
-  promotion_categorys promotion_category[]
+  promotion_categorys promotion_category[] @relation("promotion id in table promotion")
 }
 
 model product_item {
@@ -170,7 +174,6 @@ model variation {
   category_id String
   name        String
 
-
   //one to many
   variation_options variation_option[] @relation("variation in variation option")
 }
@@ -184,7 +187,7 @@ model variation_option {
   product_configuration product_configuration[] @relation("variation option in product configuration")
 
   //one to many
-  variation variation @relation("variation in variation option",fields: [variation_id],references: [id])
+  variation variation @relation("variation in variation option", fields: [variation_id], references: [id])
 }
 
 model product_configuration {

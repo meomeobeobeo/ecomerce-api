@@ -8,10 +8,8 @@ import * as redisStore from 'cache-manager-redis-store'
 import { JwtModule } from '@nestjs/jwt'
 import { JwtStrategy } from './strategy'
 @Module({
-    imports: [
-        JwtModule
-    ],
+    imports: [JwtModule],
     controllers: [AuthController],
-    providers: [AuthService, OtpService , JwtStrategy],
+    providers: [AuthService, OtpService, JwtStrategy],
 })
 export class AuthModule {}

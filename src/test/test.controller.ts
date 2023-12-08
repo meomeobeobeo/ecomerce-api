@@ -19,12 +19,7 @@ import { TestService } from './test.service'
 import { CreateTestDto } from './dto/create-test.dto'
 import { UpdateTestDto } from './dto/update-test.dto'
 import { Request, Response } from 'express'
-import {
-    CACHE_MANAGER,
-    CacheInterceptor,
-    CacheKey,
-    CacheTTL,
-} from '@nestjs/cache-manager'
+import { CACHE_MANAGER, CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager'
 import { Cache } from 'cache-manager'
 import { AuthGuard } from '@nestjs/passport'
 
@@ -61,11 +56,7 @@ export class TestController {
     }
 
     @Post('/cache')
-    async setCacheData(
-        @Req() req: Request,
-        @Res() res: Response,
-        @Body() body: any,
-    ): Promise<any> {
+    async setCacheData(@Req() req: Request, @Res() res: Response, @Body() body: any): Promise<any> {
         try {
             let value = body?.value
             await this.cacheManager.set('testCache', value)
@@ -83,11 +74,7 @@ export class TestController {
         }
     }
     @Get('/cache')
-    async getCacheData(
-        @Req() req: Request,
-        @Res() res: Response,
-        @Param() params: any,
-    ): Promise<any> {
+    async getCacheData(@Req() req: Request, @Res() res: Response, @Param() params: any): Promise<any> {
         try {
             let cacheValue = await this.cacheManager.get('testCache')
             res.json({
