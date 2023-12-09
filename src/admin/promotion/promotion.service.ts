@@ -11,11 +11,16 @@ export class PromotionService {
         private helper: HelperService,
     ) {}
     async create(createPromotionDto: CreatePromotionDto) {
+        
         try {
             let dataCreated = await this.prismaService.promotion.create({
                 data: {
                     id: this.helper.generateId(16),
-                    ...createPromotionDto,
+                    name : createPromotionDto.name,
+                    description : createPromotionDto.description,
+                    discount_rate : createPromotionDto.discount_rate,
+                    start_date: (new Date(createPromotionDto.start_date)).toISOString(),
+                    end_date: (new Date(createPromotionDto.end_date)).toISOString(),
                 },
             })
 
