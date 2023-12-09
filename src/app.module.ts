@@ -12,17 +12,17 @@ import { OtpModule } from './otp/otp.module'
 import { RedisManagerModule } from './redis-manager/redis-manager.module'
 import { ConfigModule } from '@nestjs/config'
 import { CacheModule } from '@nestjs/cache-manager'
-import { CountryModule } from './admin/country/country.module';
-import { VariationOptionModule } from './admin/variation-option/variation-option.module';
-import { VariationModule } from './admin/variation/variation.module';
-import { PromotionCategoryModule } from './admin/promotion-category/promotion-category.module';
-import { PromotionModule } from './admin/promotion/promotion.module';
-import { ProductItemsModule } from './admin/product-items/product-items.module';
-import { ProductConfigurationModule } from './admin/product-configuration/product-configuration.module';
-import { ProductModule } from './admin/product/product.module';
-import { ProductCategoryModule } from './admin/product-category/product-category.module';
-import { PaymentTypeModule } from './admin/payment-type/payment-type.module';
-import { UploadImageModule } from './utils/upload-image/upload-image.module';
+import { CountryModule } from './admin/country/country.module'
+import { VariationOptionModule } from './admin/variation-option/variation-option.module'
+import { VariationModule } from './admin/variation/variation.module'
+import { PromotionCategoryModule } from './admin/promotion-category/promotion-category.module'
+import { PromotionModule } from './admin/promotion/promotion.module'
+import { ProductItemsModule } from './admin/product-items/product-items.module'
+import { ProductConfigurationModule } from './admin/product-configuration/product-configuration.module'
+import { ProductModule } from './admin/product/product.module'
+import { ProductCategoryModule } from './admin/product-category/product-category.module'
+import { PaymentTypeModule } from './admin/payment-type/payment-type.module'
+import { UploadImageModule } from './utils/upload-image/upload-image.module'
 import * as redisStore from 'cache-manager-redis-store'
 @Module({
     imports: [

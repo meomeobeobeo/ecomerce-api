@@ -3,6 +3,7 @@ import { CreateCountryDto } from './dto/create-country.dto'
 import { UpdateCountryDto } from './dto/update-country.dto'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { HelperService } from 'src/helper/helper.service'
+import { of } from 'rxjs'
 
 @Injectable()
 export class CountryService {
@@ -38,11 +39,11 @@ export class CountryService {
         try {
             let dataReturn = await this.prismaService.country.findMany({})
 
-            return  {
-              statusCode: 200,
-              message: 'data load successfully',
-              metaData: dataReturn,
-          }
+            return {
+                statusCode: 200,
+                message: 'data load successfully',
+                metaData: dataReturn,
+            }
         } catch (error) {
             console.log(error)
             return {
@@ -56,16 +57,16 @@ export class CountryService {
     async findOne(id: string) {
         try {
             let dataReturn = await this.prismaService.country.findUnique({
-                where : {
-                    id : id
-                }
+                where: {
+                    id: id,
+                },
             })
 
-            return  {
-              statusCode: 200,
-              message: 'data load successfully',
-              metaData: dataReturn,
-          }
+            return {
+                statusCode: 200,
+                message: 'data load successfully',
+                metaData: dataReturn,
+            }
         } catch (error) {
             console.log(error)
             return {
@@ -74,24 +75,22 @@ export class CountryService {
                 metaData: '',
             }
         }
-       
     }
 
     async update(id: string, updateCountryDto: UpdateCountryDto) {
         try {
-            console.log(updateCountryDto)
             let dataReturn = await this.prismaService.country.update({
-                where :{
-                    id : id
+                where: {
+                    id: id,
                 },
-                data : updateCountryDto
+                data: updateCountryDto,
             })
 
-            return  {
-              statusCode: 204,
-              message: 'update data successfully',
-              metaData: dataReturn,
-          }
+            return {
+                statusCode: 204,
+                message: 'update data successfully',
+                metaData: dataReturn,
+            }
         } catch (error) {
             console.log(error)
             return {
@@ -105,16 +104,16 @@ export class CountryService {
     async remove(id: string) {
         try {
             let dataReturn = await this.prismaService.country.delete({
-                where : {
-                    id : id
-                }
+                where: {
+                    id: id,
+                },
             })
 
-            return  {
-              statusCode: 205,
-              message: 'data delete successfully',
-              metaData: {},
-          }
+            return {
+                statusCode: 205,
+                message: 'data delete successfully',
+                metaData: {},
+            }
         } catch (error) {
             console.log(error)
             return {

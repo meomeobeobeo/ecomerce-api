@@ -1,21 +1,7 @@
-import {
-    Body,
-    Controller,
-    Post,
-    Req,
-    Res,
-    UsePipes,
-    ValidationPipe,
-} from '@nestjs/common'
+import { Body, Controller, Post, Req, Res, UsePipes, ValidationPipe } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { Request, Response } from 'express'
-import {
-    EmailInfor,
-    LoginInforForm,
-    OtpLoginDevideInfor,
-    OtpRegisterInfor,
-    RegisterInforForm,
-} from './dto/auth.dto'
+import { EmailInfor, LoginInforForm, OtpLoginDevideInfor, OtpRegisterInfor, RegisterInforForm } from './dto/auth.dto'
 import constant from 'src/constant'
 import typeOtp from 'src/constant/typeOtp'
 
@@ -25,26 +11,15 @@ export class AuthController {
 
     @UsePipes(new ValidationPipe())
     @Post('/register/info')
-    async register(
-        @Body() emailInfor: EmailInfor,
-        @Req() req: Request,
-        @Res() res: Response,
-    ) {
-        let result = await this.authService.registerWithEmail(
-            emailInfor.email,
-            constant.typeOtp.VERIFY_EMAIL,
-        )
+    async register(@Body() emailInfor: EmailInfor, @Req() req: Request, @Res() res: Response) {
+        let result = await this.authService.registerWithEmail(emailInfor.email, constant.typeOtp.VERIFY_EMAIL)
 
         res.json({ message: result })
         return result
     }
     @UsePipes(new ValidationPipe())
     @Post('/register/verifyOtpWithEmail')
-    async verifyOtpWithEmail(
-        @Body() otpInfor: OtpRegisterInfor,
-        @Req() req: Request,
-        @Res() res: Response,
-    ) {
+    async verifyOtpWithEmail(@Body() otpInfor: OtpRegisterInfor, @Req() req: Request, @Res() res: Response) {
         let isVerify = await this.authService.verifyOtp({
             verifyInformation: otpInfor.email,
             typeOtp: otpInfor.typeOtp,
@@ -76,11 +51,7 @@ export class AuthController {
 
     @Post('/loginWithPassword')
     @UsePipes(new ValidationPipe())
-    async login(
-        @Body() loginInfor: LoginInforForm,
-        @Req() req: Request,
-        @Res() res: Response,
-    ) {
+    async login(@Body() loginInfor: LoginInforForm, @Req() req: Request, @Res() res: Response) {
         let result = await this.authService.loginWithPassWord(loginInfor)
 
         res.json(result)
@@ -88,11 +59,7 @@ export class AuthController {
     }
     @UsePipes(new ValidationPipe())
     @Post('/login/verifyOtpDevideWithEmail')
-    async verifyOtpDevideWithEmail(
-        @Body() otpInfor: OtpLoginDevideInfor,
-        @Req() req: Request,
-        @Res() res: Response,
-    ) {
+    async verifyOtpDevideWithEmail(@Body() otpInfor: OtpLoginDevideInfor, @Req() req: Request, @Res() res: Response) {
         let isVerify = await this.authService.verifyOtp({
             verifyInformation: otpInfor.email,
             typeOtp: otpInfor.typeOtp,
@@ -111,23 +78,21 @@ export class AuthController {
                 metaData: '',
             })
         } else {
-
             // create devide information
-            // create session user login in current devide include token , refresh 
-            
-            
+            // create session user login in current devide include token , refresh
+
             this.authService.createDevideInfor({
-                os : otpInfor.os,
-                osVersion:otpInfor.osVersion,
-                browser : otpInfor.browser,
-                browserVersion : otpInfor.browserVersion,
-                devide_id : otpInfor.devide_id,
-                ip : otpInfor.ip,
-                status : 'active',
-                email : otpInfor.email
+                os: otpInfor.os,
+                osVersion: otpInfor.osVersion,
+                browser: otpInfor.browser,
+                browserVersion: otpInfor.browserVersion,
+                devide_id: otpInfor.devide_id,
+                ip: otpInfor.ip,
+                status: 'active',
+                email: otpInfor.email,
             })
 
-            const data = await this.authService.createUserLoginSession(otpInfor.email , otpInfor.devide_id)
+            const data = await this.authService.createUserLoginSession(otpInfor.email, otpInfor.devide_id)
 
             res.json({
                 statusCode: 200,

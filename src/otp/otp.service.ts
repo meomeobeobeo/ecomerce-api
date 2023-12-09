@@ -32,10 +32,7 @@ export class OtpService {
         @Inject(CACHE_MANAGER) private cacheService: Cache,
         private helper: HelperService,
     ) {}
-    generateNewOtp = async (
-        number: number,
-        dataField: DataField,
-    ): Promise<ResultOtp> => {
+    generateNewOtp = async (number: number, dataField: DataField): Promise<ResultOtp> => {
         // generate new otp document to verify user email
         // hash otp value
         // save otp value in cache

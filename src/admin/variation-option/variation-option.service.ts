@@ -1,26 +1,124 @@
-import { Injectable } from '@nestjs/common';
-import { CreateVariationOptionDto } from './dto/create-variation-option.dto';
-import { UpdateVariationOptionDto } from './dto/update-variation-option.dto';
+import { Injectable } from '@nestjs/common'
+import { CreateVariationOptionDto } from './dto/create-variation-option.dto'
+import { UpdateVariationOptionDto } from './dto/update-variation-option.dto'
+import { PrismaService } from 'src/prisma/prisma.service'
+import { HelperService } from 'src/helper/helper.service'
 
 @Injectable()
 export class VariationOptionService {
-  create(createVariationOptionDto: CreateVariationOptionDto) {
-    return 'This action adds a new variationOption';
-  }
+    constructor(
+        private prismaService: PrismaService,
+        private helper: HelperService,
+    ) {}
+    async create(createVariationOptionDto: CreateVariationOptionDto) {
+        try {
+            let dataCreated = await this.prismaService.variation_option.create({
+                data: {
+                    id: this.helper.generateId(16),
+                    ...createVariationOptionDto,
+                },
+            })
 
-  findAll() {
-    return `This action returns all variationOption`;
-  }
+            return {
+                statusCode: 201,
+                message: 'data create successfully',
+                metaData: '',
+            }
+        } catch (error) {
+            console.log(error)
+            return {
+                statusCode: 500,
+                message: error?.message,
+                metaData: '',
+            }
+        }
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} variationOption`;
-  }
+    async findAll() {
+        try {
+            let dataReturn = await this.prismaService.variation_option.findMany({})
+            return {
+                statusCode: 200,
+                message: 'data load successfully',
+                metaData: dataReturn,
+            }
+        } catch (error) {
+            console.log(error)
+            return {
+                statusCode: 500,
+                message: error?.message,
+                metaData: '',
+            }
+        }
+    }
 
-  update(id: number, updateVariationOptionDto: UpdateVariationOptionDto) {
-    return `This action updates a #${id} variationOption`;
-  }
+    async findOne(id: string) {
+        try {
+            let dataReturn = await this.prismaService.variation_option.findUnique({
+                where: {
+                    id: id,
+                },
+            })
 
-  remove(id: number) {
-    return `This action removes a #${id} variationOption`;
-  }
+            return {
+                statusCode: 200,
+                message: 'data load successfully',
+                metaData: dataReturn,
+            }
+        } catch (error) {
+            console.log(error)
+            return {
+                statusCode: 500,
+                message: error?.message,
+                metaData: '',
+            }
+        }
+    }
+
+    async update(id: string, updateVariationOptionDto: UpdateVariationOptionDto) {
+        try {
+            let dataReturn = await this.prismaService.variation_option.update({
+                where: {
+                    id: id,
+                },
+                data: updateVariationOptionDto,
+            })
+
+            return {
+                statusCode: 204,
+                message: 'update data successfully',
+                metaData: dataReturn,
+            }
+        } catch (error) {
+            console.log(error)
+            return {
+                statusCode: 500,
+                message: error?.message,
+                metaData: '',
+            }
+        }
+    }
+
+    async remove(id: string) {
+        try {
+            let dataReturn = await this.prismaService.variation_option.delete({
+                where: {
+                    id: id,
+                },
+            })
+
+            return {
+                statusCode: 205,
+                message: 'data delete successfully',
+                metaData: {},
+            }
+        } catch (error) {
+            console.log(error)
+            return {
+                statusCode: 500,
+                message: error?.message,
+                metaData: '',
+            }
+        }
+    }
 }
