@@ -14,6 +14,7 @@ export class ProductConfigurationService {
         try {
             let dataCreated = await this.prismaService.product_configuration.create({
                 data: {
+                    id: this.helper.generateId(16),
                     ...createProductConfigurationDto,
                 },
             })
@@ -52,46 +53,63 @@ export class ProductConfigurationService {
     }
 
     async findOne(id: string) {
-        return {
-            statusCode: 200,
-            message: 'data load successfully',
-            metaData: {},
-        }
-        // try {
-        //     let dataReturn = await this.prismaService.product_item.findUnique({
-        //         where: {
-        //             id: id,
-        //         },
-        //     })
+        try {
+            let dataReturn = await this.prismaService.product_configuration.findUnique({
+                where: {
+                    id: id,
+                },
+            })
 
-        //     return {
-        //         statusCode: 200,
-        //         message: 'data load successfully',
-        //         metaData: dataReturn,
-        //     }
-        // } catch (error) {
-        //     console.log(error)
-        //     return {
-        //         statusCode: 500,
-        //         message: error?.message,
-        //         metaData: '',
-        //     }
-        // }
+            return {
+                statusCode: 200,
+                message: 'data load successfully',
+                metaData: dataReturn,
+            }
+        } catch (error) {
+            console.log(error)
+            return {
+                statusCode: 500,
+                message: error?.message,
+                metaData: '',
+            }
+        }
     }
 
     async update(id: string, updateProductConfigurationDto: UpdateProductConfigurationDto) {
+        let dataReturn = await this.prismaService.product_configuration.update({
+            where: {
+                id: id,
+            },
+            data: updateProductConfigurationDto,
+        })
+
         return {
-            statusCode: 200,
-            message: 'data load successfully',
-            metaData: {},
+            statusCode: 204,
+            message: 'update data successfully',
+            metaData: dataReturn,
         }
     }
 
     async remove(id: string) {
-        return {
-            statusCode: 200,
-            message: 'data remove successfully',
-            metaData: {},
+        try {
+            let dataReturn = await this.prismaService.product_configuration.delete({
+                where: {
+                    id: id,
+                },
+            })
+
+            return {
+                statusCode: 205,
+                message: 'data delete successfully',
+                metaData: {},
+            }
+        } catch (error) {
+            console.log(error)
+            return {
+                statusCode: 500,
+                message: error?.message,
+                metaData: '',
+            }
         }
     }
 }

@@ -26,7 +26,7 @@ model site_user {
   birth_day    DateTime?
   userName     String
   createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  updatedAt    DateTime  @default(now()) @updatedAt
 
   //relation one to many
   devides  devide[]
@@ -48,7 +48,7 @@ model devide {
   devide_id      String
   ip             String?
   createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  updatedAt      DateTime  @default(now()) @updatedAt
   // relation one to many 
   user           site_user @relation(fields: [user_id], references: [id])
 
@@ -66,7 +66,7 @@ model auth {
   userName     String
   email        String
   createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  updatedAt    DateTime @default(now()) @updatedAt
 
   user site_user @relation(fields: [user_id], references: [id])
 }
@@ -78,7 +78,7 @@ model session {
   devide_id  String
   expired_at DateTime
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  updatedAt  DateTime @default(now()) @updatedAt
 
   user site_user @relation(fields: [user_id], references: [id])
 }
@@ -89,7 +89,7 @@ model otp {
   user_id    String
   expired_at String
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  updatedAt  DateTime @default(now()) @updatedAt
   tryCount   Int      @default(0)
   typeOtp    String // login/register/...otherService 
 
@@ -97,21 +97,27 @@ model otp {
 }
 
 model country {
-  id           String @id
+  id           String   @id
   country_name String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
 }
 
 model payment_type {
-  id    String @id
-  value String
+  id        String   @id
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model product {
-  id            String @id
+  id            String   @id
   category_id   String
   name          String
   description   String
   product_image String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
 
   category     product_category @relation("product in product category", fields: [category_id], references: [id])
   product_item product_item[]   @relation("product item in product")
@@ -124,6 +130,8 @@ model product_category {
 
   // Other fields in your model
   category_name String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
 
   // Define the one-to-many relationship
   parentcategories product_category[] @relation("ParentCategory")
@@ -136,10 +144,12 @@ model product_category {
 model promotion_category {
   category_id  String
   promotion_id String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
 
   // Remove the product_category field
   promotion       promotion        @relation("promotion id in table promotion", fields: [promotion_id], references: [id])
-  product_categoy product_category @relation("product category id in table promotion_category" , fields: [category_id] , references: [id])
+  product_categoy product_category @relation("product category id in table promotion_category", fields: [category_id], references: [id])
 
   @@id([category_id, promotion_id])
 }
@@ -151,16 +161,22 @@ model promotion {
   discount_rate String
   start_date    DateTime
   end_date      DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
 
   promotion_categorys promotion_category[] @relation("promotion id in table promotion")
 }
 
 model product_item {
-  id            String @id
+  id            String   @id
   product_id    String
   SKU           String
   qty_in_stock  String
   product_image String
+  price         String
+  name          String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
 
   //many to one
   product product @relation("product item in product", fields: [product_id], references: [id])
@@ -170,18 +186,22 @@ model product_item {
 }
 
 model variation {
-  id          String @id
+  id          String   @id
   category_id String
   name        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
 
   //one to many
   variation_options variation_option[] @relation("variation in variation option")
 }
 
 model variation_option {
-  id           String @id
+  id           String   @id
   variation_id String
   value        String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
 
   // many to one 
   product_configuration product_configuration[] @relation("variation option in product configuration")
@@ -191,12 +211,13 @@ model variation_option {
 }
 
 model product_configuration {
+  id                  String   @id
   product_item_id     String
   variation_option_id String
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @default(now()) @updatedAt
 
   //many to one
   product_item     product_item     @relation("product item in product configuration", fields: [product_item_id], references: [id])
   variation_option variation_option @relation("variation option in product configuration", fields: [variation_option_id], references: [id])
-
-  @@id([product_item_id, variation_option_id])
 }
