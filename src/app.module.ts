@@ -1,3 +1,4 @@
+import { MongooseModule } from '@nestjs/mongoose';
 import { Module } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
@@ -23,6 +24,8 @@ import { ProductModule } from './admin/product/product.module'
 import { ProductCategoryModule } from './admin/product-category/product-category.module'
 import { PaymentTypeModule } from './admin/payment-type/payment-type.module'
 import { UploadImageModule } from './utils/upload-image/upload-image.module'
+import { OutstandingProductModule } from './admin/outstanding-product/outstanding-product.module';
+import { SellingProductModule } from './admin/selling-product/selling-product.module';
 import * as redisStore from 'cache-manager-redis-store'
 @Module({
     imports: [
@@ -34,6 +37,7 @@ import * as redisStore from 'cache-manager-redis-store'
             password : process.env.REDIS_PASSWORD,
             ttl: 60,
         }),
+        MongooseModule.forRoot(process.env.MONGODB_URL),
         SiteUserModule,
         AuthModule,
         UserAddressModule,
@@ -54,6 +58,8 @@ import * as redisStore from 'cache-manager-redis-store'
         VariationModule,
         VariationOptionModule,
         UploadImageModule,
+        OutstandingProductModule,
+        SellingProductModule,
     ],
     controllers: [AppController],
     providers: [AppService, HelperService],

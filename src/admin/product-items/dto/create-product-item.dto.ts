@@ -3,6 +3,8 @@ import { IsNotEmpty } from 'class-validator'
 export class CreateProductItemDto {
     @IsNotEmpty()
     product_id: string
+    @IsNotEmpty()
+    name: string
 
     @IsNotEmpty()
     SKU: string
@@ -12,4 +14,7 @@ export class CreateProductItemDto {
 
     @IsNotEmpty()
     product_image: string
+
+    @IsNotEmpty()
+    price: string
 }
