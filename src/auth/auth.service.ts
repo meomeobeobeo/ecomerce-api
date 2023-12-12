@@ -130,7 +130,7 @@ export class AuthService {
             let email_title = 'Your verify otp for sign up is:'
 
             let send_email = this.helper.sendEmail(
-                'meotrangbeonknd@gmail.com',
+                email,
                 'HELLO THIS IS MAIL FROM MEOECO',
                 `<h3>${email_title} : </h3><span>${otpResult.valueOtp}</span>`,
             )
@@ -251,7 +251,7 @@ export class AuthService {
             )
             const email_title = 'This is otp for verify your devide.'
             let send_email = this.helper.sendEmail(
-                'meotrangbeonknd@gmail.com', // email account
+                email, // email account
                 'HELLO THIS IS MAIL FROM MEOECO',
                 `<h3>${email_title} : </h3><span>${otpResult.valueOtp}</span>`,
             )
