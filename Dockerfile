@@ -1,25 +1,27 @@
-# Stage 1: Build
-FROM node:18.17.1 as build
-WORKDIR /app
-COPY package*.json .
+FROM node:alpine AS development
+WORKDIR /usr/src/app
+
+COPY package*.json ./
 RUN npm install
+
 COPY . .
 RUN npm run build
+RUN npx prisma migrate dev
+FROM node:alpine as production
 
-# Stage 2: Production
-FROM node:18.17.1
-WORKDIR /app
-COPY package*.json .
-RUN npm install --only=production
+ARG NODE_ENV = production
 
-# Uninstall the deprecated @prisma/cli and install prisma
-RUN npm uninstall -g @prisma/cli && npm install -g prisma
+ENV NODE_ENV=${NODE_ENV}
+WORKDIR /usr/src/app
+COPY package*.json ./
 
-# Copy the Prisma schema and generate Prisma client
-COPY prisma ./prisma
-RUN prisma generate
+RUN npm install --only=prod
+COPY . .
+COPY --from=development /usr/src/app/dist ./dist
 
-# Copy the built application
-COPY --from=build /app/dist ./dist
+CMD [ "node","dist/main" ]
 
-CMD npm run start:prod
+
+
+
+
