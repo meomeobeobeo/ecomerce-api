@@ -54,16 +54,66 @@ export class ProductItemsService {
 
     async findOne(id: string) {
         try {
-            let dataReturn = await this.prismaService.product_item.findUnique({
+            let dataReturn = {}
+
+            const productDetail = await this.prismaService.product_item.findUnique({
                 where: {
                     id: id,
                 },
+                include: {
+                    product_configuration: {
+                        include: {
+                            variation_option: {
+                                include: {
+                                    variation: true,
+                                },
+                            },
+                        },
+                    },
+                },
             })
+
+            // Group the product_configuration data by variation_id
+            const groupedByVariationId = productDetail.product_configuration.reduce((acc, config) => {
+                const variationId = config.variation_option.variation.id
+
+                if (!acc[variationId]) {
+                    acc[variationId] = {
+                        variation_id: variationId,
+                        variation_name: config.variation_option.variation.name,
+                        configurations: [],
+                    }
+                }
+
+                acc[variationId].configurations.push({
+                    product_configuration_id: config.id,
+                    variation_option_id: config.variation_option.id,
+                    value: config.variation_option.value,
+                })
+
+                return acc
+            }, {})
+
+            // Shape the returned data
+            const formattedProductDetail = {
+                id: productDetail.id,
+                product_id: productDetail.product_id,
+                SKU: productDetail.SKU,
+                qty_in_stock: productDetail.qty_in_stock,
+                product_image: productDetail.product_image,
+                price: productDetail.price,
+                name: productDetail.name,
+                createdAt: productDetail.createdAt,
+                updatedAt: productDetail.updatedAt,
+                rateValue: 5,
+                variation_list: Object.values(groupedByVariationId),
+            }
 
             return {
                 statusCode: 200,
                 message: 'data load successfully',
-                metaData: dataReturn,
+                metaData: formattedProductDetail,
+
             }
         } catch (error) {
             console.log(error)

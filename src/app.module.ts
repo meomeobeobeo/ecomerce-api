@@ -26,6 +26,10 @@ import { PaymentTypeModule } from './admin/payment-type/payment-type.module'
 import { UploadImageModule } from './utils/upload-image/upload-image.module'
 import { OutstandingProductModule } from './admin/outstanding-product/outstanding-product.module';
 import { SellingProductModule } from './admin/selling-product/selling-product.module';
+import { PurchaseModule } from './purchase/purchase.module';
+import { UserPaymentMethodModule } from './user_payment_method/user_payment_method.module';
+import { AddressModule } from './address/address.module';
+import { ShippingMethodModule } from './shipping_method/shipping_method.module';
 import * as redisStore from 'cache-manager-redis-store'
 @Module({
     imports: [
@@ -59,6 +63,10 @@ import * as redisStore from 'cache-manager-redis-store'
         UploadImageModule,
         OutstandingProductModule,
         SellingProductModule,
+        PurchaseModule,
+        UserPaymentMethodModule,
+        AddressModule,
+        ShippingMethodModule,
     ],
     controllers: [AppController],
     providers: [AppService, HelperService],

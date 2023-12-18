@@ -33,7 +33,11 @@ model site_user {
   sessions session[]
   auth     auth?
   otps     otp[]
+  user_payment_methods user_payment_method[] @relation("user id in user payment method")
+  shop_orders shop_order[] @relation("user id in shop order")
 
+
+  shopping_cart shoping_cart? @relation("user id in shopping_cart table")
   @@map("site_user")
 }
 
@@ -101,6 +105,8 @@ model country {
   country_name String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now()) @updatedAt
+
+  addresses address[] @relation("country id in address")
 }
 
 model payment_type {
@@ -108,6 +114,12 @@ model payment_type {
   value     String
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+
+
+
+  // one to many
+  user_payment_method user_payment_method[] @relation("payment type id in user payment method") 
+
 }
 
 model product {
@@ -183,6 +195,9 @@ model product_item {
 
   //one to many
   product_configuration product_configuration[] @relation("product item in product configuration")
+  shopping_cart_item shoping_cart_item[] @relation("product item id in product item")
+  // order_line order_line[] @relation("product item id in order line")
+
 }
 
 model variation {
@@ -220,4 +235,124 @@ model product_configuration {
   //many to one
   product_item     product_item     @relation("product item in product configuration", fields: [product_item_id], references: [id])
   variation_option variation_option @relation("variation option in product configuration", fields: [variation_option_id], references: [id])
+
+  // one to many
+  shopping_cart_item shoping_cart_item[] @relation("product configuration id in shopping cart item")
+
+
 }
+
+// shopping cart
+model shoping_cart {
+  id      String @id
+  user_id String @unique
+
+
+  // one to one
+  user site_user @relation("user id in shopping_cart table",fields: [user_id],references: [id])
+
+
+  //one to many
+  shopping_cart_items shoping_cart_item[] @relation("cart id in shopping cart item")
+
+
+}
+
+model shoping_cart_item {
+  id String @id
+  cart_id String 
+  product_item_id String
+  qty String
+  product_configuration_id String // if product not have variation
+
+
+  // many to one
+  cart shoping_cart @relation("cart id in shopping cart item",fields: [cart_id], references: [id])
+  product_item product_item @relation("product item id in product item",fields: [product_item_id], references: [id])
+  product_configuration product_configuration @relation("product configuration id in shopping cart item" , fields: [product_configuration_id] , references: [id])
+}
+
+
+// model order_line {
+//   id String @id
+//   product_item_id String
+//   order_id String
+//   qty String
+//   price Float
+//   product_configuration_id String
+
+//   //many to one 
+//   product_item product_item @relation("product item id in order line" , fields: [product_item_id] , references: [id])
+//   shop_order shop_order @relation("shop_order id in order line" , fields: [order_id] , references: [id])
+
+
+// }
+
+model user_payment_method {
+  id String @id
+  user_id String
+  payment_type_id String
+  provider String?
+  account_number String?
+  expire_date String?
+  is_default Boolean
+
+  // many to one
+  payment_type payment_type @relation("payment type id in user payment method" , fields: [payment_type_id], references: [id])
+  user site_user @relation("user id in user payment method" , fields: [user_id] , references: [id])
+
+  //one to many
+  shop_order shop_order[] @relation("payment method id in shop order")
+
+
+}
+
+
+model shop_order {
+  id String @id
+  user_id String
+  order_date DateTime
+  payment_method_id String
+  shipping_address_id String
+  shipping_method_id String
+  order_total String
+  order_status String
+
+  //many to one
+  user site_user @relation("user id in shop order" , fields: [user_id] , references: [id])
+  payment_method user_payment_method @relation("payment method id in shop order", fields: [payment_method_id], references: [id])
+  shipping_method shipping_method @relation("shipping method id in shop order" , fields: [shipping_method_id], references: [id])
+  shipping_address address @relation("address id in shop order" , fields: [shipping_address_id] , references: [id]) 
+  // one to many
+  // order_line order_line[] @relation("shop_order id in order line")
+}
+model shipping_method{
+  id String @id
+  name String 
+  price String 
+
+  shop_orders shop_order[] @relation("shipping method id in shop order")
+
+}
+model address {
+  id String @id
+  unit_number String?
+  street_number String?
+  address_line1 String?
+  address_line2 String?
+  city String?
+  region String?
+  postal_code String?
+  country_id String 
+
+  // many to one 
+  country country @relation("country id in address" , fields: [country_id], references: [id])
+
+  // one to many
+  shop_orders shop_order[] @relation("address id in shop order")
+
+}
+
+
+
+
