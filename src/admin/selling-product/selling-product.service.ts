@@ -29,28 +29,26 @@ export class SellingProductService {
         try {
             const sellingProductList = await this.sellingProductModel.find()
 
-            let returnData = sellingProductList.map(async (data, index) => {
-                const productItemData = await this.prismaService.product_item.findUnique({
-                    where: { id: data.product_item_id },
-                })
-                
-                const productData = await this.prismaService.product.findUnique({
-                    where: {
-                        id: productItemData.product_id,
-                    },
-                })
+            // Use Promise.all to wait for all asynchronous operations to complete
+            const returnData = await Promise.all(
+                sellingProductList.map(async (data) => {
+                    const productItemData = await this.prismaService.product_item.findUnique({
+                        where: { id: data.product_item_id },
+                    })
 
-                return {
-                  ...productItemData,
-                  name : productData.name
-                }
-            })
-            console.log(returnData)
+                  
+
+                    return {
+                        ...productItemData,
+                        rateValue : 5
+                    }
+                }),
+            )
 
             return {
                 statusCode: 201,
-                message: 'data find successfully',
-                metaData: sellingProductList,
+                message: 'Data fetched successfully',
+                metaData: returnData,
             }
         } catch (error) {
             return {

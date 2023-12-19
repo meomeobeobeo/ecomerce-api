@@ -202,6 +202,89 @@ CREATE TABLE `product_configuration` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- CreateTable
+CREATE TABLE `shoping_cart` (
+    `id` VARCHAR(191) NOT NULL,
+    `user_id` VARCHAR(191) NOT NULL,
+
+    UNIQUE INDEX `shoping_cart_user_id_key`(`user_id`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `shoping_cart_item` (
+    `id` VARCHAR(191) NOT NULL,
+    `cart_id` VARCHAR(191) NOT NULL,
+    `product_item_id` VARCHAR(191) NOT NULL,
+    `qty` VARCHAR(191) NOT NULL,
+    `product_configuration_id` VARCHAR(191) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `order_line` (
+    `id` VARCHAR(191) NOT NULL,
+    `product_item_id` VARCHAR(191) NOT NULL,
+    `order_id` VARCHAR(191) NOT NULL,
+    `qty` VARCHAR(191) NOT NULL,
+    `price` DOUBLE NOT NULL,
+    `product_configuration_id` VARCHAR(191) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `user_payment_method` (
+    `id` VARCHAR(191) NOT NULL,
+    `user_id` VARCHAR(191) NOT NULL,
+    `payment_type_id` VARCHAR(191) NOT NULL,
+    `provider` VARCHAR(191) NULL,
+    `account_number` VARCHAR(191) NULL,
+    `expire_date` DATETIME(3) NULL,
+    `is_default` BOOLEAN NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `shop_order` (
+    `id` VARCHAR(191) NOT NULL,
+    `user_id` VARCHAR(191) NOT NULL,
+    `order_date` DATETIME(3) NOT NULL,
+    `payment_method_id` VARCHAR(191) NOT NULL,
+    `shipping_address_id` VARCHAR(191) NOT NULL,
+    `shipping_method_id` VARCHAR(191) NOT NULL,
+    `order_total` VARCHAR(191) NOT NULL,
+    `order_status` VARCHAR(191) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `shipping_method` (
+    `id` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `price` DOUBLE NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `address` (
+    `id` VARCHAR(191) NOT NULL,
+    `unit_number` VARCHAR(191) NULL,
+    `street_number` VARCHAR(191) NULL,
+    `address_line1` VARCHAR(191) NULL,
+    `address_line2` VARCHAR(191) NULL,
+    `city` VARCHAR(191) NULL,
+    `region` VARCHAR(191) NULL,
+    `postal_code` VARCHAR(191) NULL,
+    `country_id` VARCHAR(191) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- AddForeignKey
 ALTER TABLE `devide` ADD CONSTRAINT `devide_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `site_user`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -237,3 +320,33 @@ ALTER TABLE `product_configuration` ADD CONSTRAINT `product_configuration_produc
 
 -- AddForeignKey
 ALTER TABLE `product_configuration` ADD CONSTRAINT `product_configuration_variation_option_id_fkey` FOREIGN KEY (`variation_option_id`) REFERENCES `variation_option`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `shoping_cart` ADD CONSTRAINT `shoping_cart_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `site_user`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `order_line` ADD CONSTRAINT `order_line_product_item_id_fkey` FOREIGN KEY (`product_item_id`) REFERENCES `product_item`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `order_line` ADD CONSTRAINT `order_line_order_id_fkey` FOREIGN KEY (`order_id`) REFERENCES `shop_order`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `user_payment_method` ADD CONSTRAINT `user_payment_method_payment_type_id_fkey` FOREIGN KEY (`payment_type_id`) REFERENCES `payment_type`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `user_payment_method` ADD CONSTRAINT `user_payment_method_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `site_user`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `shop_order` ADD CONSTRAINT `shop_order_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `site_user`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `shop_order` ADD CONSTRAINT `shop_order_payment_method_id_fkey` FOREIGN KEY (`payment_method_id`) REFERENCES `user_payment_method`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `shop_order` ADD CONSTRAINT `shop_order_shipping_method_id_fkey` FOREIGN KEY (`shipping_method_id`) REFERENCES `shipping_method`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `shop_order` ADD CONSTRAINT `shop_order_shipping_address_id_fkey` FOREIGN KEY (`shipping_address_id`) REFERENCES `address`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `address` ADD CONSTRAINT `address_country_id_fkey` FOREIGN KEY (`country_id`) REFERENCES `country`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -31,15 +31,29 @@ export class OutstandingProductService {
 
     async findAll() {
         try {
-            const outstandingProductList = await this.outstandingProductModel.find()
+            const outStandingProductList = await this.outstandingProductModel.find()
 
-            // find product infomation from mysql database
-            // return fomat data list
+            // Use Promise.all to wait for all asynchronous operations to complete
+            const returnData = await Promise.all(
+                outStandingProductList.map(async (data) => {
+                    const productItemData = await this.prismaService.product_item.findUnique({
+                        where: { id: data.product_item_id },
+                    })
+
+                  
+
+                    return {
+                        ...productItemData,
+                        rateValue : 5
+                        
+                    }
+                }),
+            )
 
             return {
                 statusCode: 201,
-                message: 'data find successfully',
-                metaData: outstandingProductList,
+                message: 'Data fetched successfully',
+                metaData: returnData,
             }
         } catch (error) {
             return {
