@@ -9,4 +9,6 @@ export class CreateUserPaymentMethodDto {
     account_number: string
     expire_date: string
     is_default: string
+    cvv : string
+    cart_holder_name : string
 }

@@ -8,7 +8,7 @@ export class CreateShoppingCartDto {
     product_item_id: string
 
     @IsNotEmpty()
-    product_configuration_id: string
+    product_configuration_id_list: Array<string>
 
     @IsNotEmpty()
     qty: string

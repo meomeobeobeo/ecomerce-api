@@ -263,7 +263,7 @@ model shoping_cart_item {
   cart_id String 
   product_item_id String
   qty String
-  product_configuration_id String // if product not have variation
+  product_configuration_id String  // if product not have variation 
 
 
   // many to one
@@ -296,6 +296,8 @@ model user_payment_method {
   account_number String?
   expire_date String?
   is_default Boolean
+  cvv String?
+  cart_holder_name String?
 
   // many to one
   payment_type payment_type @relation("payment type id in user payment method" , fields: [payment_type_id], references: [id])

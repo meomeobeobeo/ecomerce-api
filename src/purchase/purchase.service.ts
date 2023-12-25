@@ -2,7 +2,7 @@ import { CreateShopOrderDto } from './dto/createShopOrderDto';
 import { Injectable } from '@nestjs/common'
 import { HelperService } from 'src/helper/helper.service'
 import { PrismaService } from 'src/prisma/prisma.service'
-import { CreateShoppingCartDto } from './dto/shoppingCartItemDto'
+import { CreateShoppingCartDto } from '../cart-manager/dto/shoppingCartItemDto'
 import { InjectModel } from '@nestjs/mongoose';
 import { OrderLine } from './schema/order_line_schema';
 import { Model } from 'mongoose';
@@ -16,48 +16,7 @@ export class PurchaseService {
         private helper : HelperService
     ) {}
 
-    async create_shoppingCart_item(createShoppingCartItem: CreateShoppingCartDto) {
-        try {
-            let shopping_cart = null
-            const existed_shopping_cart = await this.prismaService.shoping_cart.findFirst({
-                where: {
-                    user_id: createShoppingCartItem.user_id,
-                },
-            })
-            if (!existed_shopping_cart) {
-                shopping_cart = await this.prismaService.shoping_cart.create({
-                    data: {
-                        id: this.helper.generateId(16),
-                        user_id: createShoppingCartItem.user_id,
-                    },
-                })
-            } else {
-                shopping_cart = existed_shopping_cart
-            }
-
-            let shoping_cart_itemCreated = await this.prismaService.shoping_cart_item.create({
-                data: {
-                    id: this.helper.generateId(16),
-                    cart_id: shopping_cart.id,
-                    product_configuration_id: createShoppingCartItem.product_configuration_id,
-                    product_item_id: createShoppingCartItem.product_item_id,
-                    qty: createShoppingCartItem.qty,
-                },
-            })
-            return {
-                statusCode: 201,
-                message: 'create successfully.',
-                metaData: '',
-            }
-        } catch (error) {
-            console.log(error)
-            return {
-                statusCode: 500,
-                message: error?.message,
-                metaData: '',
-            }
-        }
-    }
+    
 
     async purchaseShoppingCartItem(createShopOrderDto : CreateShopOrderDto) {
         try {
@@ -90,11 +49,12 @@ export class PurchaseService {
             
             return {
                 statusCode: 201,
-                message: 'create successfully.',
+                message: 'payment successfully',
                 metaData: created_order_line,
             }
 
         } catch (error) {
+            console.log(error)
             return {
                 statusCode: 500,
                 message: error?.message,

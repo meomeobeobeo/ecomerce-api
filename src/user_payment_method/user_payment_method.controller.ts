@@ -12,9 +12,9 @@ export class UserPaymentMethodController {
     return this.userPaymentMethodService.create(createUserPaymentMethodDto);
   }
 
-  @Get()
-  findAll() {
-    return this.userPaymentMethodService.findAll();
+  @Get('/foruser/:userId')
+  getListUserPaymentMethodWithUserId(@Param('userId') userId : string) {
+    return this.userPaymentMethodService.getListUserPaymentMethodWithUserId(userId);
   }
 
   @Get(':id')

@@ -30,6 +30,7 @@ import { PurchaseModule } from './purchase/purchase.module';
 import { UserPaymentMethodModule } from './user_payment_method/user_payment_method.module';
 import { AddressModule } from './address/address.module';
 import { ShippingMethodModule } from './shipping_method/shipping_method.module';
+import { CartManagerModule } from './cart-manager/cart-manager.module';
 import * as redisStore from 'cache-manager-redis-store'
 @Module({
     imports: [
@@ -68,6 +69,7 @@ import * as redisStore from 'cache-manager-redis-store'
         UserPaymentMethodModule,
         AddressModule,
         ShippingMethodModule,
+        CartManagerModule,
     ],
     controllers: [AppController],
     providers: [AppService, HelperService],
